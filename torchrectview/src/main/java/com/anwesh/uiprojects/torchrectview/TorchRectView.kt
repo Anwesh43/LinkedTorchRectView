@@ -225,4 +225,13 @@ class TorchRectView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity)  : TorchRectView {
+            val view : TorchRectView = TorchRectView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
