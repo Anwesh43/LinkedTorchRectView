@@ -34,3 +34,44 @@ fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
+
+fun Canvas.drawTorchPath(size : Float, sf3 : Float, paint : Paint) {
+    save()
+    val path : Path = Path()
+    path.moveTo(-size / 2, -size)
+    path.lineTo(-size, -2 * size)
+    path.lineTo(size, -2 * size)
+    path.lineTo(size / 2, -size)
+    path.lineTo(-size / 2, -size)
+    clipPath(path)
+    drawRect(RectF(-size, -size - size * sf3, size, -size), paint)
+    restore()
+}
+
+fun Canvas.drawTorchRect(scale : Float, w : Float, h : Float, paint : Paint) {
+    val sf : Float = scale.sinify()
+    val sf1 : Float = sf.divideScale(0, parts)
+    val sf2 : Float = sf.divideScale(1, parts)
+    val sf3 : Float = sf.divideScale(2, parts)
+    val size : Float = Math.min(w, h) / sizeFactor
+    save()
+    translate(w / 2, h)
+    drawRect(RectF(-size /2, -size * sf1, size / 2, 0f), paint)
+    for (j in 0..1) {
+        save()
+        translate(-size / 2 + size * j, -size)
+        drawLine(0f, 0f, -(1f - 2 * j) * size * 0.5f * sf2, -size * sf2, paint)
+        restore()
+    }
+    drawTorchPath(size, sf3, paint)
+    restore()
+}
+
+fun Canvas.drawTRNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    paint.color = colors[i]
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    paint.strokeCap = Paint.Cap.ROUND
+    drawTorchRect(scale, w, h, paint)
+}
